@@ -102,3 +102,7 @@ configuration file.
 ## Examples
 
 See `/S4/scripts/examples.ipynb`.
+
+# Experiments
+
+Experiments are run with the methods in `/S4/scripts/examples.ipynb`, with varying config parameters.
