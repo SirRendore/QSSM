@@ -1,0 +1,46 @@
+seed: 0
+
+run_name: S4D_small
+save_dir: /home/leo/QuantisedSSM/S4/log
+tensorboard: false
+n_gpu: 1 # Number of GPUs to use
+
+dataloaders:
+  type: mnist
+  args:
+    batch_size: 512
+    num_val: 10000 # Number of validation samples, 0 for no validation set 
+
+model:
+  type: S4D
+  args:
+    d_input: 1
+    d_model: 16
+    d_output: 10
+    d_state: 64
+    lr: 0.01
+    n_layers: 1
+    prenorm: false
+    postnorm: false
+    dropout: 0
+
+train:
+  epochs: 30
+  save_period: 1
+  save_checkpoint: true
+  grad_clip: null # Note: this is applied after the entire backward pass, not on the fly
+
+optimizer:
+  type: Adam
+  args:
+    weight_decay: 0
+    lr: 0.01
+
+lr_scheduler:
+  type: CosineAnnealingLR
+  args:
+    T_max: 20 # Maximum number of iterations.
+
+loss:
+  type: CrossEntropyLoss
+

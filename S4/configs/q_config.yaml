@@ -1,0 +1,114 @@
+seed: 0
+
+save_dir: /home/leo/QuantisedSSM/S4/log
+run_name: qS4_small
+checkpoint: null # Model to load - TODO: implement this
+
+model:
+  S4D:
+    S4BlockRecurrent:
+      target: S4Block
+      fake_real: "fake" # "real" or "fake"
+
+      args:
+        state_clamp_max: 50
+        state_clamp_min: -50
+        y_recur_clamp_max: 1000
+        y_recur_clamp_min: -1000
+        state_quantizer_clip: 1000
+        state_quantizer_dims: [-1, -2]  # (B H N C=2)
+        state_quantizer_bits: 16
+        # complex_to_real_mode: "polar" # "polar" or "cartesian", default is "cartesian"
+
+      weights:
+        dA: # (H, N, C=2)
+          mode: asymmetric
+          dims_to_reduce: [-1, -2]
+          num_bits: 8
+          zero_point_bits: 16 # Only used for asymmetric mode
+          percentile: 99.999 # Use this to find range limits. 100 for absolute max. For asymmetric mode, this clips between [VAL] and [1- VAL]
+          unsigned: false # Quantise to unsigned or signed integers. False by default
+          narrow_range: false # Use narrow range quantisation (ex. [-127, 127] instead of [-128, 127] for 8 bits). False by default.
+
+        dB: # (H, N, C=2)
+          mode: asymmetric
+          dims_to_reduce: [-1, -2]
+          num_bits: 8
+          zero_point_bits: 16
+          percentile: 99.999 
+          
+        dC: # (H, N, C=2)
+          mode: asymmetric
+          dims_to_reduce: [-1, -2]
+          num_bits: 8
+          zero_point_bits: 16
+          percentile: 99.999
+         
+        D: # (H)
+          mode: asymmetric
+          dims_to_reduce: [-1]
+          num_bits: 8
+          zero_point_bits: 16
+          percentile: 99.999
+
+      activations: # (B, H, L)
+        mode: asymmetric
+        dims_to_reduce: [-2] # For dynamic quantisation
+        static_dims_to_reduce: [0, -1] # For static quantisation (calibration)
+        num_bits: 8
+        zero_point_bits: 16
+        percentile: 99.999
+        unsigned: false
+        narrow_range: false
+
+    QLinear:
+      target: Linear
+      fake_real: "fake"
+
+      weights:
+        weight: 
+          mode: asymmetric
+          dims_to_reduce: null # Per tensor
+          num_bits: 8
+          zero_point_bits: 16
+          percentile: 99.999
+          unsigned: false
+          narrow_range: false
+
+        # bias: Keep bias in floating point
+
+      activations:
+        mode: asymmetric
+        dims_to_reduce: null # Per tensor
+        static_dims_to_reduce: null
+        num_bits: 8
+        zero_point_bits: 16
+        percentile: 99.999
+        unsigned: false
+        narrow_range: false
+
+    QGELU:
+      target: GELU
+      fake_real: "fake"
+
+        
+# QAT
+train:
+  epochs: 10
+  save_period: 1
+  save_checkpoint: true
+  grad_clip: null # Note: this is applied after the entire backward pass, not on the fly
+
+optimizer:
+  type: Adam
+  args:
+    weight_decay: 0
+    lr: 0.001
+
+lr_scheduler:
+  type: CosineAnnealingLR
+  args:
+    T_max: 20 # Maximum number of iterations.
+
+loss:
+  type: CrossEntropyLoss
