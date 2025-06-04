@@ -91,10 +91,10 @@ stack-data==0.6.2
 sympy==1.13.1
 tensorboard==2.18.0
 tensorboard-data-server==0.7.2
-torch==2.5.1.post303
+torch==2.5.1
 torch-summary==1.4.5
 torchmetrics==1.5.2
-torchvision==0.20.1a0+9f8010e
+torchvision==0.20.1
 tornado==6.4.2
 tqdm==4.67.1
 traitlets==5.14.3

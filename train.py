@@ -1,3 +1,4 @@
+import os
 import torch
 import numpy as np
 from tqdm import tqdm
@@ -54,7 +55,13 @@ class Trainer():
 
         self.writer = writer
 
-        self.save_dir = config.save_dir
+        if config.save_dir is None:
+            pwd = os.getcwd()
+            save_dir = os.path.join( pwd, 'S4/log' )
+            os.makedirs( save_dir )
+            self.save_dir = save_dir
+        else:
+            self.save_dir = config.save_dir
 
         self.start_epoch = epoch
         if config.resume:
