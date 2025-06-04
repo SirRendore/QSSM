@@ -88,7 +88,7 @@ def set_up_quantizers(trainer, config):
             weight_quantizer = ModuleWeightQuantizer({}) # Dummy weight quantizer
 
         if "target" in model_q_args[qBlock]:  # Replace modules if necessary
-            print(f"Replacing {model_q_args[qBlock]["target"]} with {qBlock}")
+            # print(f"Replacing {model_q_args[qBlock]["target"]} with {qBlock}")
             qBlock_class = getattr(qModules, qBlock)["class"]
             try:
                 target_class = getattr(qModules, qBlock)["allowed_targets"][model_q_args[qBlock]["target"]]

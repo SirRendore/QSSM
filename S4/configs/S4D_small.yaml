@@ -1,7 +1,7 @@
 seed: 0
 
 run_name: S4D_small
-save_dir: /home/leo/QuantisedSSM/S4/log
+save_dir: ../S4/log
 tensorboard: false
 n_gpu: 1 # Number of GPUs to use
 
